@@ -35,8 +35,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     con = sl.connect('test.db')
+    cur = con.cursor()
 
     todoist_client = TodoistClient(args.key)
     tasks = todoist_client.get_tasks()
-    print(tasks[0])
+
+    for task in tasks:
+        content = task.content.replace('\'', '\'\'')
+        query = f"INSERT INTO tasks (id, content) VALUES ({task.id}, '{content}')"
+        print('Executing query: ' + query)
+        cur.execute(query)
+    
+    con.commit()
+    con.close()
+        
     
