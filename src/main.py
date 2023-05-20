@@ -40,6 +40,17 @@ class TodoistClient:
         if (res.status_code == 401):
             print('Forbidden')
             return
+        sync_token = res.json()['sync_token']
+
+        con = sl.connect('test.db')
+        cur = con.cursor()
+        print(sync_token)
+        q = f"INSERT INTO sync_tokens VALUES ('{sync_token}')"
+        print(f"Executing query: {q}")
+        cur.execute(q)
+        con.commit()
+        con.close()
+
         ret = []
         for item in res.json()['items']:
             task = Task(item['id'])
