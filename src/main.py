@@ -1,7 +1,9 @@
 import argparse
-import sqlite3 as sl
-import requests
 import json
+import sqlite3 as sl
+
+import requests
+
 
 class Task:
     def __init__(self, id):
