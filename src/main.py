@@ -60,15 +60,21 @@ class TodoistClient:
             ret.append(task)
         return ret
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog = 'Organizer')
-    parser.add_argument('-k', '--key', required = True)
-    args = parser.parse_args()
+def clear_db():
+    con = sl.connect('test.db')
+    cur = con.cursor()
+    q = f'DELETE FROM tasks'
+    cur.execute(q)
+    q = f'DELETE FROM sync_tokens'
+    cur.execute(q)
+    con.commit()
+    con.close()
 
+def sync(key: str):
     con = sl.connect('test.db')
     cur = con.cursor()
 
-    todoist_client = TodoistClient(args.key)
+    todoist_client = TodoistClient(key)
     tasks = todoist_client.get_tasks_sync()
 
     for task in tasks:
@@ -79,5 +85,18 @@ if __name__ == '__main__':
     
     con.commit()
     con.close()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(prog = 'Organizer')
+    parser.add_argument('-k', '--key', required = True)
+    sub_parsers = parser.add_subparsers(help='sub_parsers help here', dest='subparser_name')
+    parser_clear = sub_parsers.add_parser('clear', help='clear db')
+    parser_sync = sub_parsers.add_parser('sync')
+    args = parser.parse_args()
+    
+    if args.subparser_name == 'clear':
+        clear_db()
+    elif args.subparser_name == 'sync':
+        sync(args.key)
         
     
