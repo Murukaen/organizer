@@ -98,5 +98,7 @@ if __name__ == '__main__':
         clear_db()
     elif args.subparser_name == 'sync':
         sync(args.key)
+
+    # TODO implement search task by name part
         
     
