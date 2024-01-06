@@ -86,19 +86,29 @@ def sync(key: str):
     con.commit()
     con.close()
 
+def search(text: str):
+    con = sl.connect('test.db')
+    cur = con.cursor()
+    query = f"SELECT * FROM tasks WHERE content LIKE '%{text}%'"
+    cur.execute(query)
+    rows = cur.fetchall()
+    for row in rows:
+        print(row)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog = 'Organizer')
     parser.add_argument('-k', '--key', required = True)
     sub_parsers = parser.add_subparsers(help='sub_parsers help here', dest='subparser_name')
     parser_clear = sub_parsers.add_parser('clear', help='clear db')
-    parser_sync = sub_parsers.add_parser('sync')
+    parser_sync = sub_parsers.add_parser('sync', help='desc here')
+    parser_search = sub_parsers.add_parser('search', help='desc here')
+    parser_search.add_argument('-q', '--query', required=True)
     args = parser.parse_args()
     
     if args.subparser_name == 'clear':
         clear_db()
     elif args.subparser_name == 'sync':
         sync(args.key)
-
-    # TODO implement search task by name part
-        
+    elif args.subparser_name == 'search':
+        search(args.query)
     
