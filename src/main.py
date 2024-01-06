@@ -71,6 +71,8 @@ def clear_db():
     con.close()
 
 def sync(key: str):
+    # TODO fetch priorities
+    # TODO fetch due dates
     con = sl.connect('test.db')
     cur = con.cursor()
 
