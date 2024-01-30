@@ -1,7 +1,7 @@
 """
 This module contains a Caribou migration.
 
-Migration Name: 2023_05_08_22_36 
+Migration Name: create_table_tasks
 Migration Version: 20230508231919
 """
 
@@ -10,7 +10,7 @@ def upgrade(connection):
     sql = '''
         CREATE TABLE tasks
         (
-            id INTEGER,
+            id INTEGER PRIMARY KEY,
             content TEXT
         )
     '''
