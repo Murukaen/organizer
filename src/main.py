@@ -100,7 +100,7 @@ def search(text: str):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog = 'Organizer')
     parser.add_argument('-k', '--key', required = True)
-    sub_parsers = parser.add_subparsers(help='sub_parsers help here', dest='subparser_name')
+    sub_parsers = parser.add_subparsers(help='sub_parsers help here', dest='subparser_name', required=True)
     parser_clear = sub_parsers.add_parser('clear', help='clear db')
     parser_sync = sub_parsers.add_parser('sync', help='desc here')
     parser_search = sub_parsers.add_parser('search', help='desc here')
