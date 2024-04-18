@@ -9,5 +9,5 @@ open sqlite3 CLI: `sqlite3`\
 sqlite3 show databases: `.databases`\
 sqlite3 open db cmd: `.open <db_name>`\
 sqlite3 show tables: `.tables`\
-sqlite3 descrive table: `.schema <table_name>`
+sqlite3 descrive table: `.schema <table_name>`\
 close sqlite3 CLI: `^D`
