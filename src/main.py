@@ -10,8 +10,10 @@ class Task:
         self.id = id
     def set_content(self, content):
         self.content = content
+    def set_prio(self, prio):
+        self.prio = prio
     def __str__(self) -> str:
-        return f'[id:{self.id}] [content:{self.content}]'
+        return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}]'
 
 class TodoistClient:
     def __init__(self, key):
@@ -57,6 +59,7 @@ class TodoistClient:
         for item in res.json()['items']:
             task = Task(item['id'])
             task.set_content(item['content'])
+            task.set_prio(item['priority'])
             ret.append(task)
         return ret
 
@@ -71,7 +74,7 @@ def clear_db():
     con.close()
 
 def sync(key: str):
-    # TODO fetch priorities
+    # TODO Use sync tokens for requests
     # TODO fetch due dates
     con = sl.connect('test.db')
     cur = con.cursor()
@@ -79,9 +82,11 @@ def sync(key: str):
     todoist_client = TodoistClient(key)
     tasks = todoist_client.get_tasks_sync()
 
+    print(tasks[0])
+
     for task in tasks:
         content = task.content.replace('\'', '\'\'')
-        query = f"INSERT INTO tasks (id, content) VALUES ({task.id}, '{content}')"
+        query = f"INSERT INTO tasks (id, content, prio) VALUES ({task.id}, '{content}', {task.prio})"
         print('Executing query: ' + query)
         cur.execute(query)
     
