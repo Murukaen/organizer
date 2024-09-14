@@ -1,7 +1,12 @@
 import argparse
 import sqlite3 as sl
+import logging
 
 from organizer.todoist_client import TodoistClient
+
+logger = logging.getLogger(__name__)
+
+# TODO Rename file to organizer.py and keep `python -m organizer` functional
 
 def clear_db(db):
     con = sl.connect(db)
@@ -22,12 +27,12 @@ def sync(key: str, db: str):
     todoist_client = TodoistClient(key)
     tasks = todoist_client.get_tasks_sync(db)
 
-    print(tasks[0])
+    logger.info(tasks[0])
 
     for task in tasks:
         content = task.content.replace('\'', '\'\'')
         query = f"INSERT INTO tasks (id, content, prio) VALUES ({task.id}, '{content}', {task.prio})"
-        print('Executing query: ' + query)
+        logger.debug('Executing query: ' + query)
         cur.execute(query)
     
     con.commit()
@@ -40,7 +45,7 @@ def search(text: str, db: str):
     cur.execute(query)
     rows = cur.fetchall()
     for row in rows:
-        print(row)
+        logger.info(row)
 
 def parse_args_and_execute():
     parser = argparse.ArgumentParser(prog = 'Organizer')
@@ -59,7 +64,13 @@ def parse_args_and_execute():
         sync(args.key, args.database)
     elif args.subparser_name == 'search':
         search(args.query, args.database)
+    
+def config_logger():
+    logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
+    config_logger();
+    logger.info('Started')
     parse_args_and_execute()
+    logger.info('Finished')
     

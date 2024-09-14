@@ -1,5 +1,8 @@
 import requests
 import sqlite3 as sl
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Task:
     def __init__(self, id):
@@ -14,6 +17,7 @@ class Task:
 class TodoistClient:
     def __init__(self, key):
         self.key = key
+        logging.basicConfig(level=logging.INFO)
     
     # not used
     def get_tasks(self):
@@ -21,7 +25,7 @@ class TodoistClient:
         headers = {'Authorization': 'Bearer ' + self.key}
         res = requests.get(url, headers=headers)
         if (res.status_code == 401):
-            print('Forbidden')
+            logger.error('Forbidden')
             return
         ret = []
         for item in res.json():
@@ -39,15 +43,15 @@ class TodoistClient:
         }
         res = requests.post(url, headers=headers, json=payload)
         if (res.status_code == 401):
-            print('Forbidden')
+            logger.error('Forbidden')
             return
         sync_token = res.json()['sync_token']
 
         con = sl.connect(db) # TODO Remove db ops from API client
         cur = con.cursor()
-        print(sync_token)
+        logger.info(sync_token) # TODO Clarify log message
         q = f"INSERT INTO sync_tokens VALUES ('{sync_token}')"
-        print(f"Executing query: {q}")
+        logger.info(f"Executing query: {q}")
         cur.execute(q)
         con.commit()
         con.close()
