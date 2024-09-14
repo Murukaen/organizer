@@ -6,7 +6,7 @@ class TestStorage(unittest.TestCase):
     db_name = 'test_001.db' # TODO Update name, consider using random name
 
     def setUp(self) -> None:
-        subprocess.run(['caribou', 'upgrade', self.db_name, 'migrations'])
+        subprocess.run(['caribou', 'upgrade', self.db_name, 'src/migrations'])
 
     def tearDown(self) -> None:
         subprocess.run(['rm', self.db_name]);
