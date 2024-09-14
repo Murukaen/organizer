@@ -102,7 +102,7 @@ def search(text: str, db: str):
     for row in rows:
         print(row)
 
-if __name__ == '__main__':
+def parse_args_and_execute():
     parser = argparse.ArgumentParser(prog = 'Organizer')
     parser.add_argument('-k', '--key', required = True)
     parser.add_argument('-d', '--database', required = True)
@@ -119,4 +119,7 @@ if __name__ == '__main__':
         sync(args.key, args.database)
     elif args.subparser_name == 'search':
         search(args.query, args.database)
+
+if __name__ == '__main__':
+    parse_args_and_execute()
     
