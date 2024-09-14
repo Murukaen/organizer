@@ -18,6 +18,7 @@ class TodoistClient:
     def __init__(self, key):
         self.key = key
     
+    # not used
     def get_tasks(self):
         url = 'https://api.todoist.com/rest/v2/tasks'
         headers = {'Authorization': 'Bearer ' + self.key}
@@ -32,7 +33,7 @@ class TodoistClient:
             ret.append(task)
         return ret
 
-    def get_tasks_sync(self):
+    def get_tasks_sync(self, db: str):
         url = 'https://api.todoist.com/sync/v9/sync'
         headers = {'Authorization': 'Bearer ' + self.key}
         payload = {
@@ -45,7 +46,7 @@ class TodoistClient:
             return
         sync_token = res.json()['sync_token']
 
-        con = sl.connect('test.db')
+        con = sl.connect(db)
         cur = con.cursor()
         print(sync_token)
         q = f"INSERT INTO sync_tokens VALUES ('{sync_token}')"
@@ -62,8 +63,8 @@ class TodoistClient:
             ret.append(task)
         return ret
 
-def clear_db():
-    con = sl.connect('test.db')
+def clear_db(db):
+    con = sl.connect(db)
     cur = con.cursor()
     q = f'DELETE FROM tasks'
     cur.execute(q)
@@ -72,14 +73,14 @@ def clear_db():
     con.commit()
     con.close()
 
-def sync(key: str):
+def sync(key: str, db: str):
     # TODO Use sync tokens for requests
     # TODO fetch due dates
-    con = sl.connect('test.db')
+    con = sl.connect(db)
     cur = con.cursor()
 
     todoist_client = TodoistClient(key)
-    tasks = todoist_client.get_tasks_sync()
+    tasks = todoist_client.get_tasks_sync(db)
 
     print(tasks[0])
 
@@ -92,8 +93,8 @@ def sync(key: str):
     con.commit()
     con.close()
 
-def search(text: str):
-    con = sl.connect('test.db')
+def search(text: str, db: str):
+    con = sl.connect(db)
     cur = con.cursor()
     query = f"SELECT * FROM tasks WHERE content LIKE '%{text}%'"
     cur.execute(query)
@@ -104,6 +105,7 @@ def search(text: str):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog = 'Organizer')
     parser.add_argument('-k', '--key', required = True)
+    parser.add_argument('-d', '--database', required = True)
     sub_parsers = parser.add_subparsers(help='sub_parsers help here', dest='subparser_name', required=True)
     parser_clear = sub_parsers.add_parser('clear', help='clear db')
     parser_sync = sub_parsers.add_parser('sync', help='desc here')
@@ -112,9 +114,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     if args.subparser_name == 'clear':
-        clear_db()
+        clear_db(args.database)
     elif args.subparser_name == 'sync':
-        sync(args.key)
+        sync(args.key, args.database)
     elif args.subparser_name == 'search':
-        search(args.query)
+        search(args.query, args.database)
     
