@@ -1,5 +1,4 @@
 import argparse
-import json
 import sqlite3 as sl
 
 import requests
