@@ -3,7 +3,7 @@
 ### Create migration
 `caribou create -d migrations <name>`
 ### Apply migration
-`caribou upgrade test.db migrations`
+`caribou upgrade local/test.db src/migrations`
 ## Sqlite commands
 open sqlite3 CLI: `sqlite3`\
 sqlite3 show databases: `.databases`\
