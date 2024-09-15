@@ -47,15 +47,19 @@ class Organizer:
             sync_token = rows[0][0]
         logger.debug(f'sync_token: {sync_token}')
 
+        # Get items from Todoist
         todoist_client = TodoistClient(self.api_key)
         response = todoist_client.get_tasks_sync(sync_token)
         tasks = response.tasks
         sync_token = response.sync_token
         self.__log_fetched_tasks_stats(tasks)
         
+        # Save sync token
         self.__save_sync_token(sync_token)
 
         # logger.debug(tasks[0])
+        
+        # TODO Eliminate checked tasks
 
         for task in tasks:
             content = task.content.replace('\'', '\'\'')
