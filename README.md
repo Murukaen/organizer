@@ -15,3 +15,5 @@ close sqlite3 CLI: `^D`
 ### Setup
 Run once per terminal session: `source setup.sh`\
 `python -m organizer` from top level directory
+## Data states
+- Db holds only uncompleted tasks (refreshed on every sync)
