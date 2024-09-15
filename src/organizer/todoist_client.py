@@ -13,6 +13,11 @@ class Task:
         self.prio = prio
     def __str__(self) -> str:
         return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}]'
+    
+class SyncResponse:
+    def __init__(self, tasks: list[Task], sync_token: str):
+        self.tasks = tasks
+        self.sync_token = sync_token
 
 class TodoistClient:
     
@@ -38,7 +43,7 @@ class TodoistClient:
             ret.append(task)
         return ret
 
-    def get_tasks_sync(self, db: str):
+    def get_tasks_sync(self, db: str) -> SyncResponse:
         url = self.SYNC_URL
         headers = {'Authorization': 'Bearer ' + self.key}
         payload = {
@@ -51,19 +56,10 @@ class TodoistClient:
             return
         sync_token = res.json()['sync_token']
 
-        con = sl.connect(db) # TODO Remove db ops from API client
-        cur = con.cursor()
-        logger.debug(sync_token) # TODO Clarify log message
-        q = f"INSERT INTO sync_tokens VALUES ('{sync_token}')"
-        logger.debug(f"Executing query: {q}")
-        cur.execute(q)
-        con.commit()
-        con.close()
-
-        ret = []
+        tasks:list[Task] = []
         for item in res.json()['items']:
             task = Task(item['id'])
             task.set_content(item['content'])
             task.set_prio(item['priority'])
-            ret.append(task)
-        return ret
+            tasks.append(task)
+        return SyncResponse(tasks, sync_token)

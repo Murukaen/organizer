@@ -24,6 +24,20 @@ class Organizer:
         cur.execute(q)
         con.commit()
         con.close()
+        
+    def save_sync_token(self, sync_token):
+        con = sl.connect(self.db_path)
+        cur = con.cursor()
+        logger.debug(sync_token) # TODO Clarify log message
+        # Clear sync_tokens table
+        q = f"DELETE FROM sync_tokens"
+        cur.execute(q)
+        # Insert new sync token
+        q = f"INSERT INTO sync_tokens VALUES ('{sync_token}')"
+        logger.debug(f"Executing query: {q}")
+        cur.execute(q)
+        con.commit()
+        con.close()
 
     def sync(self):
         # TODO Use sync tokens for requests
@@ -32,8 +46,12 @@ class Organizer:
         cur = con.cursor()
 
         todoist_client = TodoistClient(self.api_key)
-        tasks = todoist_client.get_tasks_sync(self.db_path)
+        response = todoist_client.get_tasks_sync(self.db_path)
+        tasks = response.tasks
+        sync_token = response.sync_token
         logger.info(f"Fetched {len(tasks)} tasks")
+        
+        self.save_sync_token(sync_token)
 
         logger.debug(tasks[0])
 
