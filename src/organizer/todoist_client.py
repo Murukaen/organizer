@@ -15,13 +15,17 @@ class Task:
         return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}]'
 
 class TodoistClient:
+    
+    TASKS_URL = 'https://api.todoist.com/rest/v2/tasks'
+    SYNC_URL = 'https://api.todoist.com/sync/v9/sync'
+    
     def __init__(self, key):
         self.key = key
         logging.basicConfig(level=logging.INFO)
     
     # not used
     def get_tasks(self):
-        url = 'https://api.todoist.com/rest/v2/tasks' # TODO Externalize
+        url = self.TASKS_URL
         headers = {'Authorization': 'Bearer ' + self.key}
         res = requests.get(url, headers=headers)
         if (res.status_code == 401):
@@ -35,7 +39,7 @@ class TodoistClient:
         return ret
 
     def get_tasks_sync(self, db: str):
-        url = 'https://api.todoist.com/sync/v9/sync'
+        url = self.SYNC_URL
         headers = {'Authorization': 'Bearer ' + self.key}
         payload = {
             'sync_token': '*',
