@@ -7,25 +7,15 @@ logger = logging.getLogger(__name__)
 
 class Organizer:
     
-    def config_logger(self):
-        logging.basicConfig(level=logging.INFO)
-    
     def __init__(self, db_path, api_key) -> None:
-        self.config_logger()
+        self.__config_logger()
         self.db_path = db_path
         self.api_key = api_key
     
-    def clear_db(self):
-        con = sl.connect(self.db_path)
-        cur = con.cursor()
-        q = f'DELETE FROM tasks'
-        cur.execute(q)
-        q = f'DELETE FROM sync_tokens'
-        cur.execute(q)
-        con.commit()
-        con.close()
+    def __config_logger(self):
+        logging.basicConfig(level=logging.INFO)
         
-    def save_sync_token(self, sync_token):
+    def __save_sync_token(self, sync_token):
         con = sl.connect(self.db_path)
         cur = con.cursor()
         logger.debug(f'sync_token: {sync_token}')
@@ -41,6 +31,7 @@ class Organizer:
         
     def __log_fetched_tasks_stats(self, tasks: list[Task]):
         logger.info(f"Fetched {len(tasks)} tasks")
+        
 
     def sync(self):
         # TODO fetch due dates
@@ -62,7 +53,7 @@ class Organizer:
         sync_token = response.sync_token
         self.__log_fetched_tasks_stats(tasks)
         
-        self.save_sync_token(sync_token)
+        self.__save_sync_token(sync_token)
 
         # logger.debug(tasks[0])
 
@@ -83,4 +74,14 @@ class Organizer:
         rows = cur.fetchall()
         for row in rows:
             logger.info(row)
+            
+    def clear_db(self):
+        con = sl.connect(self.db_path)
+        cur = con.cursor()
+        q = f'DELETE FROM tasks'
+        cur.execute(q)
+        q = f'DELETE FROM sync_tokens'
+        cur.execute(q)
+        con.commit()
+        con.close()
         
