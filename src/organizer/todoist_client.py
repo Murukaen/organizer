@@ -47,6 +47,8 @@ class TodoistClient:
 
     def get_tasks_sync(self, sync_token: None | str) -> SyncResponse:
         # TODO Eliminate checked tasks
+        
+        # Get items from Todoist
         url = self.SYNC_URL
         headers = {'Authorization': 'Bearer ' + self.key}
         payload = {
@@ -59,6 +61,7 @@ class TodoistClient:
             return
         sync_token = res.json()['sync_token']
 
+        # Construct response
         tasks:list[Task] = []
         for item in res.json()['items']:
             task = Task(item['id'])
