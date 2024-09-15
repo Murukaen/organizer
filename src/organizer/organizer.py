@@ -28,7 +28,7 @@ class Organizer:
     def save_sync_token(self, sync_token):
         con = sl.connect(self.db_path)
         cur = con.cursor()
-        logger.debug(sync_token) # TODO Clarify log message
+        logger.debug(f'sync_token: {sync_token}')
         # Clear sync_tokens table
         q = f"DELETE FROM sync_tokens"
         cur.execute(q)
