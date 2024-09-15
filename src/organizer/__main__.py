@@ -26,8 +26,9 @@ def sync(key: str, db: str):
 
     todoist_client = TodoistClient(key)
     tasks = todoist_client.get_tasks_sync(db)
+    logger.info(f"Fetched {len(tasks)} tasks")
 
-    logger.info(tasks[0])
+    logger.debug(tasks[0])
 
     for task in tasks:
         content = task.content.replace('\'', '\'\'')

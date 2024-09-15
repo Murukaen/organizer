@@ -49,9 +49,9 @@ class TodoistClient:
 
         con = sl.connect(db) # TODO Remove db ops from API client
         cur = con.cursor()
-        logger.info(sync_token) # TODO Clarify log message
+        logger.debug(sync_token) # TODO Clarify log message
         q = f"INSERT INTO sync_tokens VALUES ('{sync_token}')"
-        logger.info(f"Executing query: {q}")
+        logger.debug(f"Executing query: {q}")
         cur.execute(q)
         con.commit()
         con.close()
