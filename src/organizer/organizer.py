@@ -40,7 +40,6 @@ class Organizer:
         con.close()
 
     def sync(self):
-        # TODO Use sync tokens for requests
         # TODO fetch due dates
         con = sl.connect(self.db_path)
         cur = con.cursor()
