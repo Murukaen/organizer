@@ -1,7 +1,7 @@
 import logging
 import sqlite3 as sl
 
-from .todoist_client import TodoistClient
+from .todoist_client import Task, TodoistClient
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,9 @@ class Organizer:
         cur.execute(q)
         con.commit()
         con.close()
+        
+    def __log_fetched_tasks_stats(self, tasks: list[Task]):
+        logger.info(f"Fetched {len(tasks)} tasks")
 
     def sync(self):
         # TODO fetch due dates
@@ -57,7 +60,7 @@ class Organizer:
         response = todoist_client.get_tasks_sync(sync_token)
         tasks = response.tasks
         sync_token = response.sync_token
-        logger.info(f"Fetched {len(tasks)} tasks")
+        self.__log_fetched_tasks_stats(tasks)
         
         self.save_sync_token(sync_token)
 
