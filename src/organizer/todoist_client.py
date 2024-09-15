@@ -21,7 +21,7 @@ class TodoistClient:
     
     # not used
     def get_tasks(self):
-        url = 'https://api.todoist.com/rest/v2/tasks'
+        url = 'https://api.todoist.com/rest/v2/tasks' # TODO Externalize
         headers = {'Authorization': 'Bearer ' + self.key}
         res = requests.get(url, headers=headers)
         if (res.status_code == 401):
