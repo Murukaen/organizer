@@ -5,12 +5,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Task:
-    def __init__(self, id):
+    def __init__(self, id: str):
         self.id = id
-    def set_content(self, content):
+    def set_content(self, content: str):
         self.content = content
-    def set_prio(self, prio):
+    def set_prio(self, prio: int):
         self.prio = prio
+    def set_checked(self, checked: bool):
+        self.checked = checked
     def __str__(self) -> str:
         return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}]'
     
@@ -62,5 +64,6 @@ class TodoistClient:
             task = Task(item['id'])
             task.set_content(item['content'])
             task.set_prio(item['priority'])
+            task.set_checked(item['checked'])
             tasks.append(task)
         return SyncResponse(tasks, sync_token)
