@@ -43,11 +43,12 @@ class TodoistClient:
             ret.append(task)
         return ret
 
-    def get_tasks_sync(self, db: str) -> SyncResponse:
+    def get_tasks_sync(self, sync_token: None | str) -> SyncResponse:
+        # TODO Eliminate checked tasks
         url = self.SYNC_URL
         headers = {'Authorization': 'Bearer ' + self.key}
         payload = {
-            'sync_token': '*',
+            'sync_token': f'{sync_token if(sync_token) else "*"}',
             'resource_types': '["items"]'
         }
         res = requests.post(url, headers=headers, json=payload)
