@@ -32,7 +32,7 @@ def sync(key: str, db: str):
 
     for task in tasks:
         content = task.content.replace('\'', '\'\'')
-        query = f"INSERT INTO tasks (id, content, prio) VALUES ({task.id}, '{content}', {task.prio})"
+        query = f"INSERT OR REPLACE INTO tasks (id, content, prio) VALUES ({task.id}, '{content}', {task.prio})"
         logger.debug('Executing query: ' + query)
         cur.execute(query)
     
