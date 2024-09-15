@@ -58,12 +58,14 @@ class Organizer:
         self.__save_sync_token(sync_token)
 
         # logger.debug(tasks[0])
-        
-        # TODO Eliminate checked tasks
 
         for task in tasks:
             content = task.content.replace('\'', '\'\'')
-            query = f"INSERT OR REPLACE INTO tasks (id, content, prio) VALUES ({task.id}, '{content}', {task.prio})"
+            query = ''
+            if not task.checked:
+                query = f"INSERT OR REPLACE INTO tasks (id, content, prio) VALUES ({task.id}, '{content}', {task.prio})"
+            else:
+                query = f"DELETE FROM tasks WHERE id = {task.id}"
             # logger.debug('Executing query: ' + query)
             cur.execute(query)
         
