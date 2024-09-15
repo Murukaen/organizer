@@ -1,6 +1,7 @@
 import argparse
 import sqlite3 as sl
 import logging
+import sys
 
 from organizer.todoist_client import TodoistClient
 
@@ -69,9 +70,12 @@ def parse_args_and_execute():
 def config_logger():
     logging.basicConfig(level=logging.INFO)
 
-if __name__ == '__main__':
+def main():
     config_logger();
     logger.info('Started')
     parse_args_and_execute()
     logger.info('Finished')
+
+if __name__ == '__main__':
+    sys.exit(main())
     
