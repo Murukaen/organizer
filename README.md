@@ -1,7 +1,7 @@
 ## Migrations
 [Caribou](https://github.com/clutchski/caribou?tab=readme-ov-file#caribou-sqlite-migrations)
 ### Create migration
-`caribou create -d migrations <name>`
+`caribou create -d src/migrations <name>`
 ### Apply migration
 `caribou upgrade local/test.db src/migrations`
 ## Sqlite commands
