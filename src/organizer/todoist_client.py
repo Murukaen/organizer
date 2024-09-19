@@ -69,6 +69,9 @@ class TodoistClient:
             return datetime.strptime(date_str, self.DATE_FORMAT)
         except ValueError:
             TodoistClient.logger.error(f'Could not parse date {date_str}')
+            
+    def __extract_prio(self, prio: int) -> int:
+        return 5 - prio 
 
     def get_tasks_sync(self, sync_token: None | str) -> SyncResponse:
         # Get items from Todoist
@@ -91,7 +94,7 @@ class TodoistClient:
         for item in res.json()['items']:
             task = Task(item['id'])
             task.set_content(item['content'])
-            task.set_prio(item['priority'])
+            task.set_prio(self.__extract_prio(item['priority']))
             task.set_checked(item['checked'])
             due_json = item['due']
             if due_json:
