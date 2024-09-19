@@ -68,7 +68,10 @@ class Organizer:
             content = task.content.replace('\'', '\'\'')
             query = ''
             if not task.checked:
-                query = f"INSERT OR REPLACE INTO tasks (id, content, prio) VALUES ({task.id}, '{content}', {task.prio})"
+                due_sql = 'NULL'
+                if task.due:
+                    due_sql = f'\'{task.due.isoformat()}\''
+                query = f"INSERT OR REPLACE INTO tasks (id, content, prio, due) VALUES ({task.id}, '{content}', {task.prio}, {due_sql})"
             else:
                 query = f"DELETE FROM tasks WHERE id = {task.id}"
             # logger.debug('Executing query: ' + query)

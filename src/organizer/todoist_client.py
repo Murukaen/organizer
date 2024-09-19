@@ -1,7 +1,7 @@
 import requests
 import sqlite3 as sl
 import logging
-
+from datetime import datetime
 from .logger_utils import configure_logger
 
 class Task:
@@ -13,8 +13,10 @@ class Task:
         self.prio = prio
     def set_checked(self, checked: bool):
         self.checked = checked
+    def set_due(self, due: datetime | None):
+        self.due = due
     def __str__(self) -> str:
-        return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}]'
+        return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}] [due:{self.due}]'
     
 class SyncResponse:
     def __init__(self, tasks: list[Task], sync_token: str):
@@ -26,6 +28,10 @@ class TodoistClient:
     LOG_LEVEL = logging.DEBUG
     TASKS_URL = 'https://api.todoist.com/rest/v2/tasks'
     SYNC_URL = 'https://api.todoist.com/sync/v9/sync'
+    DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+    DATE_TIME_FROMAT_2 = "%Y-%m-%dT%H:%M:%SZ"
+    DATE_FORMAT = "%Y-%m-%d"
+    
     logger = logging.getLogger(__name__)
     
     def __init__(self, key):
@@ -49,6 +55,20 @@ class TodoistClient:
             task.set_content(item['content'])
             ret.append(task)
         return ret
+    
+    def __extract_date(self, date_str: str) -> datetime:
+        try:
+            return datetime.strptime(date_str, self.DATETIME_FORMAT)
+        except ValueError:
+            pass
+        try:
+            return datetime.strptime(date_str, self.DATE_TIME_FROMAT_2)
+        except ValueError:
+            pass
+        try:
+            return datetime.strptime(date_str, self.DATE_FORMAT)
+        except ValueError:
+            TodoistClient.logger.error(f'Could not parse date {date_str}')
 
     def get_tasks_sync(self, sync_token: None | str) -> SyncResponse:
         # Get items from Todoist
@@ -73,5 +93,11 @@ class TodoistClient:
             task.set_content(item['content'])
             task.set_prio(item['priority'])
             task.set_checked(item['checked'])
+            due_json = item['due']
+            if due_json:
+                due = self.__extract_date(due_json['date'])
+                task.set_due(due)
+            else:
+                task.set_due(None)
             tasks.append(task)
         return SyncResponse(tasks, sync_token)
