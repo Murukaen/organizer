@@ -2,7 +2,7 @@ import requests
 import sqlite3 as sl
 import logging
 
-logger = logging.getLogger(__name__)
+from .logger_utils import configure_logger
 
 class Task:
     def __init__(self, id: str):
@@ -23,12 +23,17 @@ class SyncResponse:
 
 class TodoistClient:
     
+    LOG_LEVEL = logging.DEBUG
     TASKS_URL = 'https://api.todoist.com/rest/v2/tasks'
     SYNC_URL = 'https://api.todoist.com/sync/v9/sync'
+    logger = logging.getLogger(__name__)
     
     def __init__(self, key):
         self.key = key
-        logging.basicConfig(level=logging.INFO)
+        self.__configure_logger()
+        
+    def __configure_logger(self):
+        configure_logger(TodoistClient.logger, self.LOG_LEVEL)
     
     # not used
     def get_tasks(self):
@@ -36,7 +41,7 @@ class TodoistClient:
         headers = {'Authorization': 'Bearer ' + self.key}
         res = requests.get(url, headers=headers)
         if (res.status_code == 401):
-            logger.error('Forbidden')
+            TodoistClient.logger.error('Forbidden')
             return
         ret = []
         for item in res.json():
@@ -47,7 +52,7 @@ class TodoistClient:
 
     def get_tasks_sync(self, sync_token: None | str) -> SyncResponse:
         # Get items from Todoist
-        logger.info('Fetching tasks ...')
+        TodoistClient.logger.info('Fetching tasks ...')
         url = self.SYNC_URL
         headers = {'Authorization': 'Bearer ' + self.key}
         payload = {
@@ -56,10 +61,10 @@ class TodoistClient:
         }
         res = requests.post(url, headers=headers, json=payload)
         if (res.status_code == 401):
-            logger.error('Forbidden')
+            TodoistClient.logger.error('Forbidden')
             return
         sync_token = res.json()['sync_token']
-        logger.info(f'Fetched tasks')
+        TodoistClient.logger.info(f'Fetched tasks')
 
         # Construct response
         tasks:list[Task] = []

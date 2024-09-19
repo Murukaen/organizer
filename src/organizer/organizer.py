@@ -2,10 +2,13 @@ import logging
 import sqlite3 as sl
 
 from .todoist_client import Task, TodoistClient
-
-logger = logging.getLogger(__name__)
+from .logger_utils import configure_logger
 
 class Organizer:
+    
+    LOG_LEVEL = logging.DEBUG
+    
+    logger = logging.getLogger(__name__)
     
     def __init__(self, db_path, api_key) -> None:
         self.__config_logger()
@@ -13,27 +16,28 @@ class Organizer:
         self.api_key = api_key
     
     def __config_logger(self):
-        logging.basicConfig(level=logging.INFO)
+        configure_logger(Organizer.logger, self.LOG_LEVEL);
         
     def __save_sync_token(self, sync_token):
         con = sl.connect(self.db_path)
         cur = con.cursor()
-        logger.debug(f'sync_token: {sync_token}')
+        Organizer.logger.debug(f'sync_token: {sync_token}')
         # Clear sync_tokens table
         q = f"DELETE FROM sync_tokens"
         cur.execute(q)
         # Insert new sync token
         q = f"INSERT INTO sync_tokens VALUES ('{sync_token}')"
-        logger.debug(f"Executing query: {q}")
+        Organizer.logger.debug(f"Executing query: {q}")
         cur.execute(q)
         con.commit()
         con.close()
         
     def __log_fetched_tasks_stats(self, tasks: list[Task]):
-        logger.info(f"Fetched {len(tasks)} tasks")
+        Organizer.logger.info(f"Fetched {len(tasks)} tasks")
         
 
     def sync(self):
+        Organizer.logger.info('Starting sync ...')
         # TODO fetch due dates
         con = sl.connect(self.db_path)
         cur = con.cursor()
@@ -45,7 +49,7 @@ class Organizer:
         sync_token = None
         if (len(rows) > 0):
             sync_token = rows[0][0]
-        logger.debug(f'sync_token: {sync_token}')
+        Organizer.logger.debug(f'sync_token: {sync_token}')
 
         # Get items from Todoist
         todoist_client = TodoistClient(self.api_key)
@@ -60,6 +64,7 @@ class Organizer:
         # logger.debug(tasks[0])
 
         for task in tasks:
+            Organizer.logger.debug(f'Analyzing task: {task}')
             content = task.content.replace('\'', '\'\'')
             query = ''
             if not task.checked:
@@ -79,7 +84,8 @@ class Organizer:
         cur.execute(query)
         rows = cur.fetchall()
         for row in rows:
-            logger.info(row)
+            # TODO Convert to and print a Task
+            Organizer.logger.info(row)
             
     def clear_db(self):
         con = sl.connect(self.db_path)
