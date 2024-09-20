@@ -3,6 +3,7 @@ import sqlite3 as sl
 import logging
 from datetime import datetime
 from .logger_utils import configure_logger
+from utils.datetime_utils import extract_date
 
 class Task:
     def __init__(self, id: str):
@@ -28,9 +29,6 @@ class TodoistClient:
     LOG_LEVEL = logging.DEBUG
     TASKS_URL = 'https://api.todoist.com/rest/v2/tasks'
     SYNC_URL = 'https://api.todoist.com/sync/v9/sync'
-    DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-    DATE_TIME_FROMAT_2 = "%Y-%m-%dT%H:%M:%SZ"
-    DATE_FORMAT = "%Y-%m-%d"
     
     logger = logging.getLogger(__name__)
     
@@ -56,19 +54,7 @@ class TodoistClient:
             ret.append(task)
         return ret
     
-    def __extract_date(self, date_str: str) -> datetime:
-        try:
-            return datetime.strptime(date_str, self.DATETIME_FORMAT)
-        except ValueError:
-            pass
-        try:
-            return datetime.strptime(date_str, self.DATE_TIME_FROMAT_2)
-        except ValueError:
-            pass
-        try:
-            return datetime.strptime(date_str, self.DATE_FORMAT)
-        except ValueError:
-            TodoistClient.logger.error(f'Could not parse date {date_str}')
+    
             
     def __extract_prio(self, prio: int) -> int:
         return 5 - prio 
@@ -98,7 +84,7 @@ class TodoistClient:
             task.set_checked(item['checked'])
             due_json = item['due']
             if due_json:
-                due = self.__extract_date(due_json['date'])
+                due = extract_date(due_json['date'])
                 task.set_due(due)
             else:
                 task.set_due(None)
