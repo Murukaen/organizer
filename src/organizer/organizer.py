@@ -38,7 +38,6 @@ class Organizer:
 
     def sync(self):
         Organizer.logger.info('Starting sync ...')
-        # TODO fetch due dates
         con = sl.connect(self.db_path)
         cur = con.cursor()
         
