@@ -11,7 +11,9 @@ def parse_args_and_execute():
     parser_clear = sub_parsers.add_parser('clear', help='clear db')
     parser_sync = sub_parsers.add_parser('sync', help='desc here')
     parser_search = sub_parsers.add_parser('search', help='desc here')
-    parser_search.add_argument('-q', '--query', required=True)
+    group_search = parser_search.add_mutually_exclusive_group(required=True)
+    group_search.add_argument('-q', '--query')
+    group_search.add_argument('-l', '--label')
     args = parser.parse_args()
     
     organizer = Organizer(args.database, args.key)
@@ -21,7 +23,13 @@ def parse_args_and_execute():
     elif args.subparser_name == 'sync':
         organizer.sync()
     elif args.subparser_name == 'search':
-        organizer.search(args.query)
+        if args.query:
+            organizer.search(args.query)
+        else:
+            # args.label is set
+            tasks = organizer.search_label(args.label)
+            for task in tasks:
+                print(task)
 
 def main():
     parse_args_and_execute()

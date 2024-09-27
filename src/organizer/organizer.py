@@ -110,4 +110,17 @@ class Organizer:
         cur.execute(q)
         con.commit()
         con.close()
+    
+    def search_label(self, label: str) -> list[Task]:
+        Organizer.logger.debug(f'Called search_label() for label "{label}"')
+        con = sl.connect(self.db_path)
+        cur = con.cursor()
+        query = f"SELECT DISTINCT tasks.* from tasks, json_each(tasks.labels) where json_each.value = '{label}'"
+        cur.execute(query)
+        rows = cur.fetchall()
+        tasks = []
+        for row in rows:
+            task = self.__get_todo_from_db_row(row)
+            tasks.append(task)
+        return tasks
         
