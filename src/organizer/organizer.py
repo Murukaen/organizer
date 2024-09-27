@@ -3,6 +3,7 @@ import sqlite3 as sl
 
 from .todoist_client import Task, TodoistClient
 from .logger_utils import configure_logger
+from utils.datetime_utils import extract_date
 
 class Organizer:
     
@@ -78,6 +79,14 @@ class Organizer:
         
         con.commit()
         con.close()
+        
+    def __get_todo_from_db_row(self, row) -> Task:
+        ret = Task(row[0])
+        ret.set_content(row[1])
+        ret.set_prio(row[2])
+        if row[3] != None:
+            ret.set_due(extract_date(row[3]) if row[3] != None else None)
+        return ret
 
     def search(self, text: str):
         con = sl.connect(self.db_path)
@@ -86,8 +95,8 @@ class Organizer:
         cur.execute(query)
         rows = cur.fetchall()
         for row in rows:
-            # TODO Convert to and print a Task
-            Organizer.logger.info(row)
+            task = self.__get_todo_from_db_row(row)
+            print(task)
             
     def clear_db(self):
         con = sl.connect(self.db_path)

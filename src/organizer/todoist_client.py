@@ -8,13 +8,14 @@ from utils.datetime_utils import extract_date
 class Task:
     def __init__(self, id: str):
         self.id = id
+        self.due = None
     def set_content(self, content: str):
         self.content = content
     def set_prio(self, prio: int):
         self.prio = prio
     def set_checked(self, checked: bool):
         self.checked = checked
-    def set_due(self, due: datetime | None):
+    def set_due(self, due: datetime):
         self.due = due
     def __str__(self) -> str:
         return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}] [due:{self.due}]'
