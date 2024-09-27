@@ -41,6 +41,7 @@ class TodoistClient:
         configure_logger(TodoistClient.logger, self.LOG_LEVEL)
     
     # not used
+    # TODO Consider cleanup
     def get_tasks(self):
         url = self.TASKS_URL
         headers = {'Authorization': 'Bearer ' + self.key}
