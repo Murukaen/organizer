@@ -1,5 +1,6 @@
 import logging
 import sqlite3 as sl
+import json
 
 from .todoist_client import Task, TodoistClient
 from .logger_utils import configure_logger
@@ -71,10 +72,11 @@ class Organizer:
                 due_sql = 'NULL'
                 if task.due:
                     due_sql = f'\'{task.due.isoformat()}\''
-                query = f"INSERT OR REPLACE INTO tasks (id, content, prio, due) VALUES ({task.id}, '{content}', {task.prio}, {due_sql})"
+                labels_str = json.dumps(task.labels)
+                query = f"INSERT OR REPLACE INTO tasks (id, content, prio, due, labels) VALUES ({task.id}, '{content}', {task.prio}, {due_sql}, '{labels_str}')"
             else:
                 query = f"DELETE FROM tasks WHERE id = {task.id}"
-            # logger.debug('Executing query: ' + query)
+            Organizer.logger.debug('Executing query: ' + query)
             cur.execute(query)
         
         con.commit()
@@ -86,6 +88,7 @@ class Organizer:
         ret.set_prio(row[2])
         if row[3] != None:
             ret.set_due(extract_date(row[3]) if row[3] != None else None)
+        ret.labels = json.loads(row[4])
         return ret
 
     def search(self, text: str):

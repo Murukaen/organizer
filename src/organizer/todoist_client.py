@@ -17,8 +17,10 @@ class Task:
         self.checked = checked
     def set_due(self, due: datetime):
         self.due = due
+    def set_labels(self, labels: list[str]):
+        self.labels = labels
     def __str__(self) -> str:
-        return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}] [due:{self.due}]'
+        return f'[id:{self.id}] [content:{self.content}] [p:{self.prio}] [due:{self.due}] [labels:{self.labels}]'
     
 class SyncResponse:
     def __init__(self, tasks: list[Task], sync_token: str):
@@ -55,8 +57,6 @@ class TodoistClient:
             task.set_content(item['content'])
             ret.append(task)
         return ret
-    
-    
             
     def __extract_prio(self, prio: int) -> int:
         return 5 - prio 
@@ -90,5 +90,6 @@ class TodoistClient:
                 task.set_due(due)
             else:
                 task.set_due(None)
+            task.set_labels(item['labels'])
             tasks.append(task)
         return SyncResponse(tasks, sync_token)
