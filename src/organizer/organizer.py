@@ -9,6 +9,7 @@ from utils.datetime_utils import extract_date
 class Organizer:
     
     LOG_LEVEL = logging.DEBUG
+    TASK_URL_PREFIX = 'https://app.todoist.com/app/task/'
     
     logger = logging.getLogger(__name__)
     
@@ -123,4 +124,11 @@ class Organizer:
             task = self.__get_todo_from_db_row(row)
             tasks.append(task)
         return tasks
+    
+    def get(self, id, props):
+        ret = {}
+        for w in props.split(','):
+            if w == 'url':
+                ret['url'] = Organizer.TASK_URL_PREFIX + id
+        return ret
         

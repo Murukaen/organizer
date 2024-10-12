@@ -14,6 +14,9 @@ def parse_args_and_execute():
     group_search = parser_search.add_mutually_exclusive_group(required=True)
     group_search.add_argument('-q', '--query')
     group_search.add_argument('-l', '--label')
+    parser_get = sub_parsers.add_parser('get', help='get details about a task')
+    parser_get.add_argument('-id', '--id', required = True)
+    parser_get.add_argument('-p', '--props', required = True) # TODO Add help description
     args = parser.parse_args()
     
     organizer = Organizer(args.database, args.key)
@@ -30,6 +33,9 @@ def parse_args_and_execute():
             tasks = organizer.search_label(args.label)
             for task in tasks:
                 print(task)
+    elif args.command == 'get':
+        data = organizer.get(args.id, args.props)
+        print(data)
 
 def main():
     parse_args_and_execute()
