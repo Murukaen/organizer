@@ -1,5 +1,4 @@
 import requests
-import sqlite3 as sl
 import logging
 from datetime import datetime
 from .logger_utils import configure_logger
