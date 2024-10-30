@@ -31,9 +31,10 @@ def parse_args_and_execute():
         else:
             # args.label is set
             tasks = organizer.search_label(args.label)
+            print('Items:\n------')
             for task in tasks:
                 print(task)
-            print(f'\nReturned {len(tasks)} items')
+            print(f'------\nReturned {len(tasks)} items')
     elif args.command == 'get':
         data = organizer.get(args.id, args.props)
         print(data)
