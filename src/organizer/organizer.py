@@ -8,7 +8,7 @@ from utils.datetime_utils import extract_date
 
 class Organizer:
     
-    LOG_LEVEL = logging.DEBUG
+    LOG_LEVEL = logging.INFO
     TASK_URL_PREFIX = 'https://app.todoist.com/app/task/'
     
     logger = logging.getLogger(__name__)
