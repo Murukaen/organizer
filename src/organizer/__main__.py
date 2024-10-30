@@ -33,6 +33,7 @@ def parse_args_and_execute():
             tasks = organizer.search_label(args.label)
             for task in tasks:
                 print(task)
+            print(f'\nReturned {len(tasks)} items')
     elif args.command == 'get':
         data = organizer.get(args.id, args.props)
         print(data)
