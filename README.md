@@ -1,4 +1,4 @@
-## Migrations
+## DB Migrations
 
 [Caribou](https://github.com/clutchski/caribou?tab=readme-ov-file#caribou-sqlite-migrations)
 
