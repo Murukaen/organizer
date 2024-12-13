@@ -13,10 +13,9 @@ class Organizer:
     
     logger = logging.getLogger(__name__)
     
-    def __init__(self, db_path, api_key) -> None:
+    def __init__(self, db_path) -> None:
         self.__config_logger()
         self.db_path = db_path
-        self.api_key = api_key
     
     def __config_logger(self):
         configure_logger(Organizer.logger, self.LOG_LEVEL);
@@ -39,7 +38,7 @@ class Organizer:
         Organizer.logger.info(f"Fetched {len(tasks)} tasks")
         
 
-    def sync(self):
+    def sync(self, api_key):
         Organizer.logger.info('Starting sync ...')
         con = sl.connect(self.db_path)
         cur = con.cursor()
@@ -54,7 +53,7 @@ class Organizer:
         Organizer.logger.debug(f'sync_token: {sync_token}')
 
         # Get items from Todoist
-        todoist_client = TodoistClient(self.api_key)
+        todoist_client = TodoistClient(api_key)
         response = todoist_client.get_tasks_sync(sync_token)
         tasks = response.tasks
         sync_token = response.sync_token
